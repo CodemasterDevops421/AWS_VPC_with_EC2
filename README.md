@@ -52,7 +52,7 @@ Cleaning Up
 
 To destroy the resources created by this configuration, run:
 ```
-"terraform destroy"
+terraform destroy
 ```
 
 Confirm the destroy when prompted.
