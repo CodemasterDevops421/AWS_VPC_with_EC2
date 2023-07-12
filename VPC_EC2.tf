@@ -4,20 +4,40 @@ provider "aws" {
 
 
 resource "aws_eip" "demo-eip" {
-  vpc = true
-  instance = aws_instance.demo-server.id
-  depends_on = [aws_instance.demo-server]
+  count    = 2
+  domain   = "vpc"
+  instance = aws_instance.demo-server[count.index].id
 }
 
 
+
+
 resource "aws_instance" "demo-server" {
+  count                       = 2
   ami                         = var.os_name
   key_name                    = var.key
   instance_type               = var.instance-type
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.demo_subnet.id
   vpc_security_group_ids      = [aws_security_group.demo-vpc-sg.id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo yum upgrade -y
+              sudo yum install unzip java-11-openjdk-devel docker -y
+              sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              EOF
+
+  tags = {
+    Name = "demo-server-${count.index}"
+  }
 }
+
+
 
 // Create VPC
 resource "aws_vpc" "demo-vpc" {
@@ -96,7 +116,7 @@ resource "aws_security_group" "demo-vpc-sg" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-  
+
   ingress {
 
     from_port        = 8080
