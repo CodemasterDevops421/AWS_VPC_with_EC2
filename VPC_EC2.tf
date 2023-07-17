@@ -4,7 +4,7 @@ provider "aws" {
 
 
 resource "aws_eip" "demo-eip" {
-  count    = 2
+  count    = 1
   domain   = "vpc"
   instance = aws_instance.demo-server[count.index].id
 }
@@ -13,7 +13,7 @@ resource "aws_eip" "demo-eip" {
 
 
 resource "aws_instance" "demo-server" {
-  count                       = 2
+  count                       = 1
   ami                         = var.os_name
   key_name                    = var.key
   instance_type               = var.instance-type
@@ -135,7 +135,7 @@ resource "aws_security_group" "demo-vpc-sg" {
   }
 
   tags = {
-    Name = "allow_tls"
+    Name = "main"
   }
 }
 
