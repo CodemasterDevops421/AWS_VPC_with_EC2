@@ -28,6 +28,9 @@ resource "aws_instance" "demo-server" {
               sudo yum install unzip java-11-openjdk-devel docker -y
               sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
+              # Modify PATH to include /usr/local/bin
+              echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
+              source ~/.bashrc
               sudo systemctl start docker
               sudo systemctl enable docker
               EOF
