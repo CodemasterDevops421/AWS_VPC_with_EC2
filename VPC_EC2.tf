@@ -2,24 +2,20 @@ provider "aws" {
   region = var.location
 }
 
-
-resource "aws_eip" "demo-eip" {
+resource "aws_eip" "demo_eip" {
   count    = 1
   domain   = "vpc"
-  instance = aws_instance.demo-server[count.index].id
+  instance = aws_instance.demo_server[count.index].id
 }
 
-
-
-
-resource "aws_instance" "demo-server" {
+resource "aws_instance" "demo_server" {
   count                       = 1
   ami                         = var.os_name
   key_name                    = var.key
-  instance_type               = var.instance-type
+  instance_type               = var.instance_type
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.demo_subnet.id
-  vpc_security_group_ids      = [aws_security_group.demo-vpc-sg.id]
+  vpc_security_group_ids      = [aws_security_group.demo_vpc_sg.id]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -40,18 +36,16 @@ resource "aws_instance" "demo-server" {
   }
 }
 
-
-
 // Create VPC
-resource "aws_vpc" "demo-vpc" {
-  cidr_block = var.vpc-cidr
+resource "aws_vpc" "demo_vpc" {
+  cidr_block = var.vpc_cidr
 }
 
 // Create Subnet
 resource "aws_subnet" "demo_subnet" {
-  vpc_id            = aws_vpc.demo-vpc.id
-  cidr_block        = var.subnet1-cidr
-  availability_zone = var.subent_az
+  vpc_id            = aws_vpc.demo_vpc.id
+  cidr_block        = var.subnet1_cidr
+  availability_zone = var.subnet_az
 
   tags = {
     Name = "demo_subnet"
@@ -59,42 +53,39 @@ resource "aws_subnet" "demo_subnet" {
 }
 
 // Create Internet Gateway
-
-resource "aws_internet_gateway" "demo-igw" {
-  vpc_id = aws_vpc.demo-vpc.id
+resource "aws_internet_gateway" "demo_igw" {
+  vpc_id = aws_vpc.demo_vpc.id
 
   tags = {
     Name = "demo-igw"
   }
 }
 
-resource "aws_route_table" "demo-rt" {
-  vpc_id = aws_vpc.demo-vpc.id
+resource "aws_route_table" "demo_rt" {
+  vpc_id = aws_vpc.demo_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.demo-igw.id
+    gateway_id = aws_internet_gateway.demo_igw.id
   }
+
   tags = {
     Name = "demo-rt"
   }
 }
 
-// associate subnet with route table 
-resource "aws_route_table_association" "demo-rt_association" {
-  subnet_id = aws_subnet.demo_subnet.id
-
-  route_table_id = aws_route_table.demo-rt.id
+// associate subnet with route table
+resource "aws_route_table_association" "demo_rt_association" {
+  subnet_id      = aws_subnet.demo_subnet.id
+  route_table_id = aws_route_table.demo_rt.id
 }
-// create a security group 
 
-resource "aws_security_group" "demo-vpc-sg" {
-  name = "demo-vpc-sg"
-
-  vpc_id = aws_vpc.demo-vpc.id
+// create a security group
+resource "aws_security_group" "demo_vpc_sg" {
+  name   = "demo-vpc-sg"
+  vpc_id = aws_vpc.demo_vpc.id
 
   ingress {
-
     from_port        = 22
     to_port          = 22
     protocol         = "tcp"
@@ -103,7 +94,6 @@ resource "aws_security_group" "demo-vpc-sg" {
   }
 
   ingress {
-
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
@@ -112,7 +102,6 @@ resource "aws_security_group" "demo-vpc-sg" {
   }
 
   ingress {
-
     from_port        = 443
     to_port          = 443
     protocol         = "tcp"
@@ -121,7 +110,6 @@ resource "aws_security_group" "demo-vpc-sg" {
   }
 
   ingress {
-
     from_port        = 8080
     to_port          = 8080
     protocol         = "tcp"
@@ -141,5 +129,3 @@ resource "aws_security_group" "demo-vpc-sg" {
     Name = "main"
   }
 }
-
-
