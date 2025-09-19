@@ -11,7 +11,7 @@ variable "ami_id" {
 
 variable "key" {
   description = "Name of an existing EC2 key pair"
-  default     = "demo-03"
+  default     = "rasberrypi5"
 }
 
 variable "instance_type" {
