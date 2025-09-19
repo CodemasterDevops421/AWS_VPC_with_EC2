@@ -3,9 +3,10 @@ variable "location" {
   default     = "ap-south-1"
 }
 
-variable "os_name" {
-  description = "AMI ID for the EC2 instance"
-  default     = "ami-006935d9a6773e4ec"
+variable "ami_id" {
+  description = "Override to pin a specific AMI ID (leave empty for latest Ubuntu 22.04 LTS)"
+  type        = string
+  default     = ""
 }
 
 variable "key" {
