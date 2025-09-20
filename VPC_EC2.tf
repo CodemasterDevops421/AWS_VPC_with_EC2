@@ -37,6 +37,11 @@ resource "aws_instance" "demo_server" {
   subnet_id                   = aws_subnet.demo_subnet.id
   vpc_security_group_ids      = [aws_security_group.demo_vpc_sg.id]
 
+  root_block_device {
+    volume_size = 50
+    volume_type = "gp3"
+  }
+
   user_data = <<-EOF
               #!/bin/bash
               set -e
@@ -135,6 +140,13 @@ resource "aws_security_group" "demo_vpc_sg" {
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
